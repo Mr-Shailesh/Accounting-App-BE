@@ -1,0 +1,9 @@
+amount
+companyName
+date
+description
+isExpense
+organizationId
+organizationName
+userId
+userName
