@@ -7,6 +7,7 @@ router.post("/", async (req, res) => {
   try {
     console.log("req", req);
     const newClient = new Client({
+      userId: req.body.userId,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
