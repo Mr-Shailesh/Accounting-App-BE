@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -83,10 +84,34 @@ const UserSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    tokens: [
+      {
+        token: {
+          type: String,
+          require: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
+
+UserSchema.methods.generateAuthToken = async function () {
+  try {
+    const token = await jwt.sign(
+      { _id: this._id.toString() },
+      process.env.SECRET_KEY
+    );
+    this.tokens = this.tokens.concat({ token: token });
+    await this.save();
+    return token;
+    // const tokenVerify = await jwt.verify(token, "shailesh");
+    // console.log("tokenVerify", tokenVerify);
+  } catch (error) {
+    console.log("error", error);
+  }
+};
 
 module.exports = mongoose.model("User", UserSchema);

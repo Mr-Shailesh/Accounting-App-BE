@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const auth = require("../middleware/auth");
 
 // REGISTER
 router.post("/register", async (req, res) => {
@@ -27,6 +28,8 @@ router.post("/register", async (req, res) => {
       password: hashedPass,
     });
 
+    const token = await newUser.generateAuthToken();
+
     const user = await newUser.save();
     res.status(200).json(user);
   } catch (err) {
@@ -35,23 +38,37 @@ router.post("/register", async (req, res) => {
 });
 
 // LOGIN
-router.post("/login", async (req, res) => {
+router.post("/login", auth, async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.status(400).json("Wrong Credentials!!");
+      return res.status(400).json("Wrong Email!!");
     }
-
     const validated = await bcrypt.compare(req.body.password, user.password);
     if (!validated) {
-      return res.status(400).json("Wrong Credentials!!");
+      return res.status(400).json("Wrong Password!!");
     }
-
-    const { password, ...others } = user._doc;
+    const token = await user.generateAuthToken();
+    console.log("token", token);
+    const { password, tokens, ...others } = user._doc;
     res.status(200).json(others);
   } catch (err) {
     res.status(500).json(err);
     console.log("Error ==> ", err);
+  }
+});
+
+// LOGOUT
+router.get("/logout", async (req, res) => {
+  try {
+    // req.user.tokens = req.suer.tokens.filter((currElement) => {
+    //   return currElement.token !== req.token;
+    // });
+    // await req.user.save()
+    console.log("req", req);
+    console.log("logout");
+  } catch (error) {
+    res.status(500).json(err);
   }
 });
 

@@ -7,6 +7,7 @@ router.post("/", async (req, res) => {
   try {
     console.log("req", req);
     const newOrganization = new Organization({
+      userId: req.body.userId,
       organizationName: req.body.organizationName,
       organizationEmail: req.body.organizationEmail,
       organizationLocation: req.body.organizationLocation,
