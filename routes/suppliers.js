@@ -1,13 +1,15 @@
 const router = require("express").Router();
+const auth = require("../middleware/auth");
 const Supplier = require("../models/Supplier");
 
 // Add SUPPLIER
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
+  const userID = req.userId;
+
   try {
-    console.log("req", req);
     const newSupplier = new Supplier({
-      userId: req.body.userId,
+      adminId: userID,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
@@ -27,7 +29,7 @@ router.post("/", async (req, res) => {
 
 // UPDATE SUPPLIER
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   try {
     const supplier = await Supplier.findById(req.params.id);
     if (supplier) {
@@ -51,7 +53,7 @@ router.put("/:id", async (req, res) => {
 
 // DELETE SUPPLIER
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const supplier = await Supplier.findById(req.params.id);
     if (supplier) {
@@ -71,10 +73,13 @@ router.delete("/:id", async (req, res) => {
 
 // GET ALL SUPPLIER
 
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
     const suppliers = await Supplier.find();
-    res.status(200).json(suppliers);
+    const newSuppliers = suppliers.filter(
+      (supplier) => supplier.userId === userID
+    );
+    res.status(200).json(newSuppliers);
   } catch (err) {
     res.status(500).json(err);
   }

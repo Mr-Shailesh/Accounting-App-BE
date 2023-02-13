@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const SaleSchema = new mongoose.Schema(
   {
+    adminId: {
+      type: String,
+      require: false,
+    },
     description: {
       type: String,
       require: true,
@@ -13,32 +17,29 @@ const SaleSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-
-    // Client COompany Name
-
-    // companyName: {
-    //   type: String,
-    //   require: true,
-    // },
-    // organizationName: {
-    //   type: String,
-    //   require: true,
-    // },
     organizationId: {
       type: String,
       require: true,
     },
-    // clientName: {
-    //   type: String,
-    //   require: true,
-    // },
-    clientId: {
+    organizationName: {
+      type: String,
+      require: true,
+    },
+    userId: {
+      type: String,
+      require: true,
+    },
+    userName: {
+      type: String,
+      require: true,
+    },
+    companyName: {
       type: String,
       require: true,
     },
     isExpense: {
       type: Boolean,
-      require: true,
+      require: false,
     },
   },
   {

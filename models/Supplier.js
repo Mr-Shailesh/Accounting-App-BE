@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const SupplierSchema = new mongoose.Schema(
   {
-    userId: {
+    adminId: {
       type: String,
       require: false,
     },

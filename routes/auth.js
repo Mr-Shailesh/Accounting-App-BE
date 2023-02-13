@@ -31,14 +31,15 @@ router.post("/register", async (req, res) => {
     const token = await newUser.generateAuthToken();
 
     const user = await newUser.save();
-    res.status(200).json(user);
+    const data = { ...user, token: token };
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
 // LOGIN
-router.post("/login", auth, async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
@@ -49,9 +50,8 @@ router.post("/login", auth, async (req, res) => {
       return res.status(400).json("Wrong Password!!");
     }
     const token = await user.generateAuthToken();
-    console.log("token", token);
-    const { password, tokens, ...others } = user._doc;
-    res.status(200).json(others);
+    const data = { ...user, token: token };
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json(err);
     console.log("Error ==> ", err);
@@ -59,16 +59,15 @@ router.post("/login", auth, async (req, res) => {
 });
 
 // LOGOUT
-router.get("/logout", async (req, res) => {
+router.post("/logout", auth, async (req, res) => {
   try {
-    // req.user.tokens = req.suer.tokens.filter((currElement) => {
-    //   return currElement.token !== req.token;
-    // });
-    // await req.user.save()
-    console.log("req", req);
-    console.log("logout");
+    req.user.tokens = await req.user.tokens.filter((currElement) => {
+      return currElement.token !== req.token;
+    });
+    await req.user.save();
+    res.status(200).json("done");
   } catch (error) {
-    res.status(500).json(err);
+    res.status(500).json(error);
   }
 });
 
