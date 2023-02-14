@@ -10,23 +10,12 @@ const clientRoute = require("./routes/clients");
 const supplierRoute = require("./routes/suppliers");
 const organizationRoute = require("./routes/organizations");
 const cors = require("cors");
-// const jwt = require("jsonwebtoken");
 
 dotenv.config();
 
 app.use(express.json());
 app.use(cors());
 mongoose.set("strictQuery", false);
-
-// const createToken = async () => {
-//   const token = await jwt.sign({ _id: "abcd" }, "shailesh");
-//   console.log("token", token);
-
-//   const tokenVerify = await jwt.verify(token, "shailesh");
-//   console.log("tokenVerify", tokenVerify);
-// };
-
-// createToken();
 
 mongoose
   .connect(process.env.MONGO_URL, {

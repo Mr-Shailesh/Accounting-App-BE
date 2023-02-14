@@ -3,12 +3,9 @@ const auth = require("../middleware/auth");
 const Purchase = require("../models/Purchase");
 
 // Add PURCHASE
-
 router.post("/", auth, async (req, res) => {
   const userID = req.userId;
-
   try {
-    console.log("req", req);
     const newPurchase = new Purchase({
       adminId: userID,
       description: req.body.description,
@@ -29,7 +26,6 @@ router.post("/", auth, async (req, res) => {
 });
 
 // UPDATE PURCHASE
-
 router.put("/:id", auth, async (req, res) => {
   try {
     const purchase = await Purchase.findById(req.params.id);
@@ -53,7 +49,6 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // DELETE PURCHASE
-
 router.delete("/:id", auth, async (req, res) => {
   try {
     const purchase = await Purchase.findById(req.params.id);
@@ -73,13 +68,12 @@ router.delete("/:id", auth, async (req, res) => {
 });
 
 // GET ALL PURCHASE
-
 router.get("/", auth, async (req, res) => {
   const userID = req.userId;
   try {
     const purchases = await Purchase.find();
     const newPurchases = purchases.filter(
-      (purchase) => purchase.userId === userID
+      (purchase) => purchase.adminId === userID
     );
     res.status(200).json(newPurchases);
   } catch (err) {

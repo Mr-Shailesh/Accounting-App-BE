@@ -6,7 +6,6 @@ const auth = require("../middleware/auth");
 // REGISTER
 router.post("/register", async (req, res) => {
   try {
-    console.log("req", req);
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(req.body.password, salt);
     const newUser = new User({
@@ -20,7 +19,7 @@ router.post("/register", async (req, res) => {
       city: req.body.city,
       state: req.body.state,
       country: req.body.country,
-      zipCode: req.body.zipCode,
+      pinCode: req.body.pinCode,
       url: req.body.url,
       term: req.body.term,
       jobTitle: req.body.jobTitle,
@@ -68,6 +67,29 @@ router.post("/logout", auth, async (req, res) => {
     res.status(200).json("done");
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+// UPDATE
+router.put("/update", auth, async (req, res) => {
+  try {
+    const user = await User.find();
+    if (user) {
+      try {
+        const updatedUser = await User.findByIdAndUpdate(
+          req.userId,
+          {
+            $set: req.body,
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedUser);
+      } catch (err) {
+        res.status(500).json(err);
+      }
+    }
+  } catch (err) {
+    res.status(401).json("Client not found");
   }
 });
 

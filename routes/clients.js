@@ -3,12 +3,9 @@ const auth = require("../middleware/auth");
 const Client = require("../models/Client");
 
 // ADD CLIENT
-
 router.post("/", auth, async (req, res) => {
   const userID = req.userId;
-
   try {
-    console.log("req", req);
     const newClient = new Client({
       adminId: userID,
       firstName: req.body.firstName,
@@ -29,7 +26,6 @@ router.post("/", auth, async (req, res) => {
 });
 
 // UPDATE CLIENT
-
 router.put("/:id", auth, async (req, res) => {
   try {
     const client = await Client.findById(req.params.id);
@@ -53,7 +49,6 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // DELETE CLIENT
-
 router.delete("/:id", auth, async (req, res) => {
   try {
     const client = await Client.findById(req.params.id);
@@ -73,11 +68,11 @@ router.delete("/:id", auth, async (req, res) => {
 });
 
 // GET ALL CLIENT
-
 router.get("/", auth, async (req, res) => {
+  const userID = req.userId;
   try {
     const clients = await Client.find();
-    const newClients = clients.filter((client) => client.userId === userID);
+    const newClients = clients.filter((client) => client.adminId === userID);
     res.status(200).json(newClients);
   } catch (err) {
     res.status(500).json(err);

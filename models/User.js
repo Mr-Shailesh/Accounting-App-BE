@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema(
       },
     },
     phone: {
-      type: Number,
+      type: String,
       required: [true, "User phone number required"],
       validate: {
         validator: function (v) {
@@ -60,12 +60,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    contry: {
+    country: {
       type: String,
       require: true,
     },
-    zipCode: {
-      type: Number,
+    pinCode: {
+      type: String,
       require: true,
     },
     url: {
@@ -107,8 +107,6 @@ UserSchema.methods.generateAuthToken = async function () {
     this.tokens = this.tokens.concat({ token: token });
     await this.save();
     return token;
-    // const tokenVerify = await jwt.verify(token, "shailesh");
-    // console.log("tokenVerify", tokenVerify);
   } catch (error) {
     console.log("error", error);
   }

@@ -3,10 +3,8 @@ const auth = require("../middleware/auth");
 const Supplier = require("../models/Supplier");
 
 // Add SUPPLIER
-
 router.post("/", auth, async (req, res) => {
   const userID = req.userId;
-
   try {
     const newSupplier = new Supplier({
       adminId: userID,
@@ -28,7 +26,6 @@ router.post("/", auth, async (req, res) => {
 });
 
 // UPDATE SUPPLIER
-
 router.put("/:id", auth, async (req, res) => {
   try {
     const supplier = await Supplier.findById(req.params.id);
@@ -52,7 +49,6 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // DELETE SUPPLIER
-
 router.delete("/:id", auth, async (req, res) => {
   try {
     const supplier = await Supplier.findById(req.params.id);
@@ -72,12 +68,12 @@ router.delete("/:id", auth, async (req, res) => {
 });
 
 // GET ALL SUPPLIER
-
 router.get("/", auth, async (req, res) => {
+  const userID = req.userId;
   try {
     const suppliers = await Supplier.find();
     const newSuppliers = suppliers.filter(
-      (supplier) => supplier.userId === userID
+      (supplier) => supplier.adminId === userID
     );
     res.status(200).json(newSuppliers);
   } catch (err) {

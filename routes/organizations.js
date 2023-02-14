@@ -3,11 +3,9 @@ const auth = require("../middleware/auth");
 const Organization = require("../models/Organization");
 
 // Add ORGANIZATION
-
 router.post("/", auth, async (req, res) => {
   const userID = req.userId;
   try {
-    console.log("req", req);
     const newOrganization = new Organization({
       adminId: userID,
       organizationName: req.body.organizationName,
@@ -24,7 +22,6 @@ router.post("/", auth, async (req, res) => {
 });
 
 // UPDATE ORGANIZATION
-
 router.put("/:id", auth, async (req, res) => {
   try {
     const organization = await Organization.findById(req.params.id);
@@ -48,7 +45,6 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // DELETE ORGANIZATION
-
 router.delete("/:id", auth, async (req, res) => {
   try {
     const organization = await Organization.findById(req.params.id);
@@ -68,13 +64,12 @@ router.delete("/:id", auth, async (req, res) => {
 });
 
 // GET ALL ORGANIZATION
-
 router.get("/", auth, async (req, res) => {
   const userID = req.userId;
   try {
     const organizations = await Organization.find();
     const newOrganizations = organizations.filter(
-      (organization) => organization.userId === userID
+      (organization) => organization.adminId === userID
     );
     res.status(200).json(newOrganizations);
   } catch (err) {

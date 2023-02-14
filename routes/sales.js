@@ -3,12 +3,9 @@ const auth = require("../middleware/auth");
 const Sale = require("../models/Sale");
 
 // Add SALE
-
 router.post("/", auth, async (req, res) => {
   const userID = req.userId;
-
   try {
-    console.log("req", req);
     const newSale = new Sale({
       adminId: userID,
       description: req.body.description,
@@ -29,7 +26,6 @@ router.post("/", auth, async (req, res) => {
 });
 
 // UPDATE SALE
-
 router.put("/:id", auth, async (req, res) => {
   try {
     const sale = await Sale.findById(req.params.id);
@@ -53,7 +49,6 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // DELETE SALE
-
 router.delete("/:id", auth, async (req, res) => {
   try {
     const sale = await Sale.findById(req.params.id);
@@ -73,12 +68,11 @@ router.delete("/:id", auth, async (req, res) => {
 });
 
 // GET ALL SALE
-
 router.get("/", auth, async (req, res) => {
   const userID = req.userId;
   try {
     const sales = await Sale.find();
-    const newSales = sales.filter((sale) => sale.userId === userID);
+    const newSales = sales.filter((sale) => sale.adminId === userID);
     res.status(200).json(newSales);
   } catch (err) {
     res.status(500).json(err);
