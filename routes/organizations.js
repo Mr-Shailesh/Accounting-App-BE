@@ -1,13 +1,13 @@
 const router = require("express").Router();
+const auth = require("../middleware/auth");
 const Organization = require("../models/Organization");
 
 // Add ORGANIZATION
-
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
+  const userID = req.userId;
   try {
-    console.log("req", req);
     const newOrganization = new Organization({
-      userId: req.body.userId,
+      adminId: userID,
       organizationName: req.body.organizationName,
       organizationEmail: req.body.organizationEmail,
       organizationLocation: req.body.organizationLocation,
@@ -22,8 +22,7 @@ router.post("/", async (req, res) => {
 });
 
 // UPDATE ORGANIZATION
-
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   try {
     const organization = await Organization.findById(req.params.id);
     if (organization) {
@@ -46,8 +45,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE ORGANIZATION
-
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const organization = await Organization.findById(req.params.id);
     if (organization) {
@@ -66,11 +64,14 @@ router.delete("/:id", async (req, res) => {
 });
 
 // GET ALL ORGANIZATION
-
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
+  const userID = req.userId;
   try {
     const organizations = await Organization.find();
-    res.status(200).json(organizations);
+    const newOrganizations = organizations.filter(
+      (organization) => organization.adminId === userID
+    );
+    res.status(200).json(newOrganizations);
   } catch (err) {
     res.status(500).json(err);
   }

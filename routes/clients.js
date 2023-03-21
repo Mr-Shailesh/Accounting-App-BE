@@ -1,13 +1,13 @@
 const router = require("express").Router();
+const auth = require("../middleware/auth");
 const Client = require("../models/Client");
 
 // ADD CLIENT
-
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
+  const userID = req.userId;
   try {
-    console.log("req", req);
     const newClient = new Client({
-      userId: req.body.userId,
+      adminId: userID,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
@@ -26,8 +26,7 @@ router.post("/", async (req, res) => {
 });
 
 // UPDATE CLIENT
-
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   try {
     const client = await Client.findById(req.params.id);
     if (client) {
@@ -50,8 +49,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE CLIENT
-
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const client = await Client.findById(req.params.id);
     if (client) {
@@ -70,11 +68,12 @@ router.delete("/:id", async (req, res) => {
 });
 
 // GET ALL CLIENT
-
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
+  const userID = req.userId;
   try {
     const clients = await Client.find();
-    res.status(200).json(clients);
+    const newClients = clients.filter((client) => client.adminId === userID);
+    res.status(200).json(newClients);
   } catch (err) {
     res.status(500).json(err);
   }

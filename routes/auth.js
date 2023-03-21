@@ -6,7 +6,6 @@ const auth = require("../middleware/auth");
 // REGISTER
 router.post("/register", async (req, res) => {
   try {
-    console.log("req", req);
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(req.body.password, salt);
     const newUser = new User({
@@ -20,7 +19,7 @@ router.post("/register", async (req, res) => {
       city: req.body.city,
       state: req.body.state,
       country: req.body.country,
-      zipCode: req.body.zipCode,
+      pinCode: req.body.pinCode,
       url: req.body.url,
       term: req.body.term,
       jobTitle: req.body.jobTitle,
@@ -31,14 +30,15 @@ router.post("/register", async (req, res) => {
     const token = await newUser.generateAuthToken();
 
     const user = await newUser.save();
-    res.status(200).json(user);
+    const data = { ...user, token: token };
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
 // LOGIN
-router.post("/login", auth, async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
@@ -49,9 +49,8 @@ router.post("/login", auth, async (req, res) => {
       return res.status(400).json("Wrong Password!!");
     }
     const token = await user.generateAuthToken();
-    console.log("token", token);
-    const { password, tokens, ...others } = user._doc;
-    res.status(200).json(others);
+    const data = { ...user, token: token };
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json(err);
     console.log("Error ==> ", err);
@@ -59,16 +58,38 @@ router.post("/login", auth, async (req, res) => {
 });
 
 // LOGOUT
-router.get("/logout", async (req, res) => {
+router.post("/logout", auth, async (req, res) => {
   try {
-    // req.user.tokens = req.suer.tokens.filter((currElement) => {
-    //   return currElement.token !== req.token;
-    // });
-    // await req.user.save()
-    console.log("req", req);
-    console.log("logout");
+    req.user.tokens = await req.user.tokens.filter((currElement) => {
+      return currElement.token !== req.token;
+    });
+    await req.user.save();
+    res.status(200).json("done");
   } catch (error) {
-    res.status(500).json(err);
+    res.status(500).json(error);
+  }
+});
+
+// UPDATE
+router.put("/update", auth, async (req, res) => {
+  try {
+    const user = await User.find();
+    if (user) {
+      try {
+        const updatedUser = await User.findByIdAndUpdate(
+          req.userId,
+          {
+            $set: req.body,
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedUser);
+      } catch (err) {
+        res.status(500).json(err);
+      }
+    }
+  } catch (err) {
+    res.status(401).json("Client not found");
   }
 });
 
